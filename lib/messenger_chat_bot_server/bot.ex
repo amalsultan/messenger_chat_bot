@@ -2,6 +2,7 @@ defmodule MessengerChatBotServer.Bot do
   @moduledoc false
 
   require Logger
+
   def verify_webhook(params) do
     facebook_chat_bot = Application.get_env(:messenger_chat_bot_server, :facebook_chat_bot)
     mode = params["hub.mode"]
@@ -22,14 +23,15 @@ defmodule MessengerChatBotServer.Bot do
   def send_message(msg_template) do
     endpoint = bot_endpoint()
     http_poison_message = Poison.encode!(msg_template)
-    header =  [{"Content-Type", "application/json"}]
+    header = [{"Content-Type", "application/json"}]
 
     case HTTPoison.post(endpoint, http_poison_message, header) do
       {:ok, _response} ->
         :ok
         Logger.info("Message Sent to Bot")
+
       {:error, reason} ->
-        Logger.error("Error in sending message to bot, #{inspect reason}")
+        Logger.error("Error in sending message to bot, #{inspect(reason)}")
         :error
     end
   end

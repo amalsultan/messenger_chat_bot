@@ -25,33 +25,36 @@ defmodule MessengerChatBotServer do
     msg_template = %{
       "get_started" => %{"payload" => "GET_STARTED"},
       "persistent_menu" => [
+        %{
+          "locale" => "default",
+          "composer_input_disabled" => false,
+          "call_to_actions" => [
             %{
-                "locale" => "default",
-                "composer_input_disabled" => false,
-                "call_to_actions" => [
-                    %{
-                        "type" => "postback",
-                        "title" => "Talk to an agent",
-                        "payload" => "CARE_HELP"
-                    },
-                    %{
-                        "type" => "postback",
-                        "title" => "Get Started again",
-                        "payload" => "CURATION"
-                    }
-                ]
+              "type" => "postback",
+              "title" => "Talk to an agent",
+              "payload" => "CARE_HELP"
+            },
+            %{
+              "type" => "postback",
+              "title" => "Get Started again",
+              "payload" => "CURATION"
             }
-        ]
+          ]
+        }
+      ]
     }
+
     http_poison_message = Poison.encode!(msg_template)
-    header =  [{"Content-Type", "application/json"}]
+    header = [{"Content-Type", "application/json"}]
     endpoint = get_messenger_profile_endpoint()
+
     case HTTPoison.post(endpoint, http_poison_message, header) do
       {:ok, _response} ->
         :ok
         Logger.info("Message Sent")
+
       {:error, reason} ->
-        Logger.error("Error in sending message, #{inspect reason}")
+        Logger.error("Error in sending message, #{inspect(reason)}")
         :error
     end
   end
@@ -66,9 +69,12 @@ defmodule MessengerChatBotServer do
 
       _ ->
         error_template =
-          MessengerChatBotServer.MessageTemplate.text(event, "Something went wrong. We are working on it.")
+          MessengerChatBotServer.MessageTemplate.text(
+            event,
+            "Something went wrong. We are working on it."
+          )
 
-          MessengerChatBotServer.Bot.send_message(event, error_template)
+        MessengerChatBotServer.Bot.send_message(event, error_template)
     end
   end
 end

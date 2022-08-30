@@ -25,9 +25,17 @@ defmodule MessengerChatBotServer.Coin do
   end
 
   def get_coin_data(%{id: coin_id}) do
-    endpoint = Path.join([Application.get_env(:messenger_chat_bot_server, :coin_gecko_api_base_url), "coins", coin_id, "market_chart"])
+    endpoint =
+      Path.join([
+        Application.get_env(:messenger_chat_bot_server, :coin_gecko_api_base_url),
+        "coins",
+        coin_id,
+        "market_chart"
+      ])
+
     options = [params: [vs_currency: "usd", days: 14, interval: "daily"]]
-    header =  [{"Content-Type", "application/json"}]
+    header = [{"Content-Type", "application/json"}]
+
     case HTTPoison.get(endpoint, header, options) do
       {:ok, %HTTPoison.Response{status_code: 404}} ->
         message = "Coin with the id #{coin_id} not found"
@@ -40,15 +48,21 @@ defmodule MessengerChatBotServer.Coin do
         |> transform_coin_data()
 
       {:error, reason} ->
-        Logger.error("Error in getting the coin data, #{inspect reason}")
+        Logger.error("Error in getting the coin data, #{inspect(reason)}")
         {:error, reason}
     end
   end
 
   def get_coin_data(%{name: coin_name}) do
-    endpoint = Path.join(Application.get_env(:messenger_chat_bot_server, :coin_gecko_api_base_url), "search")
-    header =  [{"Content-Type", "application/json"}]
+    endpoint =
+      Path.join(
+        Application.get_env(:messenger_chat_bot_server, :coin_gecko_api_base_url),
+        "search"
+      )
+
+    header = [{"Content-Type", "application/json"}]
     options = [params: [query: coin_name]]
+
     case HTTPoison.get(endpoint, header, options) do
       {:ok, %HTTPoison.Response{status_code: 404}} ->
         message = "Coin with the name #{coin_name} not found"
@@ -61,7 +75,7 @@ defmodule MessengerChatBotServer.Coin do
         |> filter_coin_list()
 
       {:error, reason} ->
-        Logger.error("Error in getting the coin data, #{inspect reason}")
+        Logger.error("Error in getting the coin data, #{inspect(reason)}")
         {:error, reason}
     end
   end

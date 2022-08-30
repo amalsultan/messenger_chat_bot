@@ -1,5 +1,4 @@
 defmodule MessengerChatBotServer.Message do
-
   def get_sender(event) do
     messaging = get_messaging(event)
     messaging["sender"]
@@ -29,9 +28,11 @@ defmodule MessengerChatBotServer.Message do
     version = facebook_chat_bot.api_version
     token_path = "?access_token=#{page_token}"
     profile_path = Path.join([base_url, version, sender["id"], token_path])
+
     case HTTPoison.get(profile_path) do
       {:ok, response} ->
         {:ok, Jason.decode!(response.body)}
+
       {:error, error} ->
         {:enoprofile, error}
     end

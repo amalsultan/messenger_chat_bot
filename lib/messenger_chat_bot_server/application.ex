@@ -7,7 +7,6 @@ defmodule MessengerChatBotServer.Application do
 
   @impl true
   def start(_type, _args) do
-
     MessengerChatBotServer.get_started()
 
     children = [
