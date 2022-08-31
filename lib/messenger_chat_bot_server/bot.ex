@@ -1,10 +1,13 @@
 defmodule MessengerChatBotServer.Bot do
-  @moduledoc false
+  @moduledoc """
+  Bot sends formatted message to messenger
+  """
 
   alias MessengerChatBotServer.Endpoint
 
   require Logger
 
+  @spec get_started :: :error | :ok
   def get_started() do
     msg_template = %{
       "get_started" => %{"payload" => "GET_STARTED"},
@@ -43,6 +46,7 @@ defmodule MessengerChatBotServer.Bot do
     end
   end
 
+  @spec verify_webhook(nil | maybe_improper_list | map) :: boolean
   def verify_webhook(params) do
     facebook_chat_bot = Application.get_env(:messenger_chat_bot_server, :facebook_chat_bot)
     mode = params["hub.mode"]
@@ -50,6 +54,7 @@ defmodule MessengerChatBotServer.Bot do
     mode == "subscribe" && token == facebook_chat_bot.webhook_verify_token
   end
 
+  @spec send_message(any) :: :error | :ok
   def send_message(msg_template) do
     endpoint = Endpoint.bot_endpoint()
     http_poison_message = Poison.encode!(msg_template)

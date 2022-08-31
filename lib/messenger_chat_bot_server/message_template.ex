@@ -4,38 +4,7 @@ defmodule MessengerChatBotServer.MessageTemplate do
   """
   alias MessengerChatBotServer.Message
 
-  def buttons(event, template_title, buttons) do
-    buttons = Enum.map(buttons, &prepare_button/1)
-
-    payload = %{
-      "template_type" => "button",
-      "text" => template_title,
-      "buttons" => buttons
-    }
-
-    recipient = recipient(event)
-
-    message = %{
-      "attachment" => attachment("template", payload)
-    }
-
-    template(recipient, message)
-  end
-
-  def quick_response(event, template_title, replies) do
-    quick_responses = Enum.map(replies, &prepare_quick_reply/1)
-
-    payload = %{
-      "text" => template_title,
-      "quick_replies" => quick_responses
-    }
-
-    recipient = recipient(event)
-    message = payload
-    template(recipient, message)
-  end
-
-  def prepare_button({message_type, title, payload}) do
+  defp prepare_button({message_type, title, payload}) do
     %{
       "type" => "#{message_type}",
       "title" => title,
@@ -43,7 +12,7 @@ defmodule MessengerChatBotServer.MessageTemplate do
     }
   end
 
-  def prepare_quick_reply({message_type, title, payload}) do
+  defp prepare_quick_reply({message_type, title, payload}) do
     %{
       "content_type" => "#{message_type}",
       "title" => title,
@@ -69,10 +38,44 @@ defmodule MessengerChatBotServer.MessageTemplate do
     }
   end
 
+  @spec text(nil | maybe_improper_list | map, String.t()) :: map()
   def text(event, text) do
     %{
       "recipient" => recipient(event),
       "message" => %{"text" => text}
     }
+  end
+
+  @spec buttons(nil | maybe_improper_list | map, String.t(), list()) :: map()
+  def buttons(event, template_title, buttons) do
+    buttons = Enum.map(buttons, &prepare_button/1)
+
+    payload = %{
+      "template_type" => "button",
+      "text" => template_title,
+      "buttons" => buttons
+    }
+
+    recipient = recipient(event)
+
+    message = %{
+      "attachment" => attachment("template", payload)
+    }
+
+    template(recipient, message)
+  end
+
+  @spec quick_response(nil | maybe_improper_list | map, String.t(), list()) :: map()
+  def quick_response(event, template_title, replies) do
+    quick_responses = Enum.map(replies, &prepare_quick_reply/1)
+
+    payload = %{
+      "text" => template_title,
+      "quick_replies" => quick_responses
+    }
+
+    recipient = recipient(event)
+    message = payload
+    template(recipient, message)
   end
 end

@@ -1,4 +1,8 @@
 defmodule MessengerChatBotServer.Endpoint do
+  @moduledoc """
+  Endpoint is helper module which provides api endpoints.
+  """
+
   @spec get_messenger_profile_endpoint :: binary
   def get_messenger_profile_endpoint() do
     facebook_chat_bot = Application.get_env(:messenger_chat_bot_server, :facebook_chat_bot)

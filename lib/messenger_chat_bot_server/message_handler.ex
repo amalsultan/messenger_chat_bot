@@ -16,7 +16,6 @@ defmodule MessengerChatBotServer.MessageHandler do
     Bot.send_message(button_template)
   end
 
-  @spec get_coin_names(list()) :: list()
   defp get_coin_names(coins) do
     Enum.reduce(coins, [], fn %{"name" => coin_name, "id" => coin_id}, acc ->
       acc ++ [{:text, coin_name, coin_id}]
@@ -40,6 +39,7 @@ defmodule MessengerChatBotServer.MessageHandler do
     Bot.send_message(message_template)
   end
 
+  @spec handle_message(any, nil | maybe_improper_list | map) :: :error | :ok
   def handle_message("GET_STARTED", event) do
     {:ok, profile} = Message.get_profile(event)
     {:ok, first_name} = Map.fetch(profile, "first_name")
@@ -71,9 +71,10 @@ defmodule MessengerChatBotServer.MessageHandler do
     Bot.send_message(resp_template)
   end
 
-  def handle_message(%{"text" => "id=" <> coin_id}, event) do
-    retrieve_coin_data(coin_id, event)
-  end
+  def handle_message(%{"quick_reply" => %{"payload" => coin_id}}, event),
+    do: retrieve_coin_data(coin_id, event)
+
+  def handle_message(%{"text" => "id=" <> coin_id}, event), do: retrieve_coin_data(coin_id, event)
 
   def handle_message(%{"text" => "name=" <> coin_name}, event) do
     message_template =
@@ -98,10 +99,6 @@ defmodule MessengerChatBotServer.MessageHandler do
     message = "Hello #{first_name}!"
     resp_template = MessageTemplate.text(event, message)
     Bot.send_message(resp_template)
-  end
-
-  def handle_message(%{"quick_reply" => %{"payload" => coin_id}}, event) do
-    retrieve_coin_data(coin_id, event)
   end
 
   def handle_message(_message, event) do

@@ -24,6 +24,8 @@ defmodule MessengerChatBotServer.Message do
     messaging["message"]
   end
 
+  @spec get_profile(nil | maybe_improper_list | map) ::
+          {:enoprofile, HTTPoison.Error.t()} | {:ok, any}
   def get_profile(event) do
     sender = get_sender(event)
     facebook_chat_bot = Application.get_env(:messenger_chat_bot_server, :facebook_chat_bot)
@@ -42,7 +44,5 @@ defmodule MessengerChatBotServer.Message do
     end
   end
 
-  def greet() do
-    "Hello buddy. Welcome to Crypto Mind"
-  end
+  def greet(), do: "Hello buddy. Welcome to Crypto Mind"
 end

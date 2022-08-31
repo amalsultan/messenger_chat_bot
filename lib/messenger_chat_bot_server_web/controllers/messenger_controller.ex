@@ -3,6 +3,7 @@ defmodule MessengerChatBotServerWeb.MessengerController do
 
   require Logger
 
+  @spec verify_webhook_token(Plug.Conn.t(), nil | list() | map) :: Plug.Conn.t()
   def verify_webhook_token(conn, params) do
     verified? = MessengerChatBotServer.Bot.verify_webhook(params)
 
