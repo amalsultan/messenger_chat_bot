@@ -7,4 +7,4 @@ To start your Phoenix server:
   
 ## Environment Variables
 
-See .env.example file to see the environment variable required.
+See .env.example file to see the environment variables required.
