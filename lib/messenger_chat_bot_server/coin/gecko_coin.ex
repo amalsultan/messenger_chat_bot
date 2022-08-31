@@ -7,14 +7,6 @@ defmodule MessengerChatBotServer.GeckoCoin do
 
   defp filter_coin_list(%{"coins" => coins}), do: Enum.slice(coins, 0..4)
 
-  defp format_coin_data(acc, price) do
-    formatted_price = Float.round(price, 10)
-    "#{acc} \n #{Float.to_string(formatted_price)}"
-  end
-
-  defp transform_coin_data(%{"prices" => prices}),
-    do: Enum.reduce(prices, "", fn [_timestamp, price], acc -> format_coin_data(acc, price) end)
-
   @spec get_coin_data(%{
           optional(:id) =>
             binary
@@ -45,7 +37,6 @@ defmodule MessengerChatBotServer.GeckoCoin do
       {:ok, %HTTPoison.Response{body: body}} ->
         body
         |> Jason.decode!()
-        |> transform_coin_data()
 
       {:error, reason} ->
         Logger.error("Error in getting the coin data, #{inspect(reason)}")

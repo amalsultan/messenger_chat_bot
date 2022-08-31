@@ -5,6 +5,14 @@ defmodule MessengerChatBotServer.MessageHandler do
 
   alias MessengerChatBotServer.{Bot, Message, MessageTemplate, GeckoCoin}
 
+  defp format_coin_data(acc, price) do
+    formatted_price = Float.round(price, 10)
+    "#{acc} \n #{Float.to_string(formatted_price)}"
+  end
+
+  defp transform_coin_data(%{"prices" => prices}),
+    do: Enum.reduce(prices, "", fn [_timestamp, price], acc -> format_coin_data(acc, price) end)
+
   defp send_search_options(event) do
     buttons = [
       {:postback, "By ID", "SEARCH_BY_ID"},
@@ -26,6 +34,7 @@ defmodule MessengerChatBotServer.MessageHandler do
     message_template =
       %{id: coin_id}
       |> GeckoCoin.get_coin_data()
+      |> transform_coin_data()
       |> case do
         {:error, reason} ->
           MessageTemplate.text(event, reason)
@@ -80,6 +89,7 @@ defmodule MessengerChatBotServer.MessageHandler do
     message_template =
       %{name: coin_name}
       |> GeckoCoin.get_coin_data()
+      |> transform_coin_data()
       |> case do
         {:error, reason} ->
           MessageTemplate.text(event, reason)
