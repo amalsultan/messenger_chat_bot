@@ -34,6 +34,17 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+config :messenger_chat_bot_server,
+  facebook_chat_bot: %{
+    message_url: "me/messages",
+    api_version: "v14.0",
+    base_url: "https://graph.facebook.com",
+    page_access_token: System.get_env("PAGE_ACCESS_TOKEN"),
+    profile_url: "me/messenger_profile",
+    webhook_verify_token: System.get_env("VERIFY_TOKEN")
+  },
+  coin_gecko_api_base_url: "https://api.coingecko.com/api/v3/"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

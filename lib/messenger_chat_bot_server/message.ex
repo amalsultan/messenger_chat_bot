@@ -1,4 +1,7 @@
 defmodule MessengerChatBotServer.Message do
+  @moduledoc """
+  Provides message content/data
+  """
 
   def get_sender(event) do
     messaging = get_messaging(event)
@@ -21,6 +24,8 @@ defmodule MessengerChatBotServer.Message do
     messaging["message"]
   end
 
+  @spec get_profile(nil | maybe_improper_list | map) ::
+          {:enoprofile, HTTPoison.Error.t()} | {:ok, any}
   def get_profile(event) do
     sender = get_sender(event)
     facebook_chat_bot = Application.get_env(:messenger_chat_bot_server, :facebook_chat_bot)
@@ -29,15 +34,15 @@ defmodule MessengerChatBotServer.Message do
     version = facebook_chat_bot.api_version
     token_path = "?access_token=#{page_token}"
     profile_path = Path.join([base_url, version, sender["id"], token_path])
+
     case HTTPoison.get(profile_path) do
       {:ok, response} ->
         {:ok, Jason.decode!(response.body)}
+
       {:error, error} ->
         {:enoprofile, error}
     end
   end
 
-  def greet() do
-    "Hello buddy. Welcome to Crypto Mind"
-  end
+  def greet(), do: "Hello buddy. Welcome to Crypto Mind"
 end

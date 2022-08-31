@@ -16,17 +16,6 @@ config :messenger_chat_bot_server, MessengerChatBotServerWeb.Endpoint,
   secret_key_base: "5NuuYXX5xQwsKXd+3O1FWnC/Z05BtfAfOZ7mcgjaFLlK3mrOjmLaOKWx5+rAwbx0",
   watchers: []
 
-config :messenger_chat_bot_server,
-  facebook_chat_bot: %{
-    message_url: "me/messages",
-    api_version: "v14.0",
-    base_url: "https://graph.facebook.com",
-    page_access_token: System.get_env("PAGE_ACCESS_TOKEN"),
-    profile_url: "me/messenger_profile",
-    webhook_verify_token: System.get_env("VERIFY_TOKEN")
-  },
-  coin_gecko_api_base_url: "https://api.coingecko.com/api/v3/"
-
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed
