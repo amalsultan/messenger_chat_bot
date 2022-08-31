@@ -1,4 +1,7 @@
 defmodule MessengerChatBotServer.MessageTemplate do
+  @moduledoc """
+  MessengerTemplate create the templates to display appropriate formatted messages
+  """
   alias MessengerChatBotServer.Message
 
   def buttons(event, template_title, buttons) do

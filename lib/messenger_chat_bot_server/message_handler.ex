@@ -1,5 +1,9 @@
 defmodule MessengerChatBotServer.MessageHandler do
-  alias MessengerChatBotServer.{Bot, Message, MessageTemplate, Coin}
+  @moduledoc """
+  MessageHandler handles the messages coming from chatbot user and responds with appropriate response.
+  """
+
+  alias MessengerChatBotServer.{Bot, Message, MessageTemplate, GeckoCoin}
 
   defp send_search_options(event) do
     buttons = [
@@ -12,16 +16,17 @@ defmodule MessengerChatBotServer.MessageHandler do
     Bot.send_message(button_template)
   end
 
-  def get_coin_names(coins) do
+  @spec get_coin_names(list()) :: list()
+  defp get_coin_names(coins) do
     Enum.reduce(coins, [], fn %{"name" => coin_name, "id" => coin_id}, acc ->
       acc ++ [{:text, coin_name, coin_id}]
     end)
   end
 
-  def retrieve_coin_data(coin_id, event) do
+  defp retrieve_coin_data(coin_id, event) do
     message_template =
       %{id: coin_id}
-      |> Coin.get_coin_data()
+      |> GeckoCoin.get_coin_data()
       |> case do
         {:error, reason} ->
           MessageTemplate.text(event, reason)
@@ -73,7 +78,7 @@ defmodule MessengerChatBotServer.MessageHandler do
   def handle_message(%{"text" => "name=" <> coin_name}, event) do
     message_template =
       %{name: coin_name}
-      |> Coin.get_coin_data()
+      |> GeckoCoin.get_coin_data()
       |> case do
         {:error, reason} ->
           MessageTemplate.text(event, reason)

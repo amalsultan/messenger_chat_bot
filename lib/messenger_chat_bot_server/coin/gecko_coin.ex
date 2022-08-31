@@ -1,29 +1,33 @@
-defmodule MessengerChatBotServer.Coin do
-  @moduledoc false
+defmodule MessengerChatBotServer.GeckoCoin do
+  @moduledoc """
+  GeckoCoin interacts with gecko coin api to fetch coin data and convert it in required format.
+  """
 
   require Logger
 
-  def filter_coin_list(%{"coins" => coins}) do
+  defp filter_coin_list(%{"coins" => coins}) do
     coins
     |> Enum.slice(0..4)
   end
 
-  def convert_into_readable_date_time(timestamp) do
-    timestamp
-    |> DateTime.from_unix!(:millisecond)
-    |> DateTime.to_date()
-    |> Date.to_string()
-  end
-
-  def format_coin_data(acc, price) do
+  defp format_coin_data(acc, price) do
     formatted_price = Float.round(price, 10)
     "#{acc} \n #{Float.to_string(formatted_price)}"
   end
 
-  def transform_coin_data(%{"prices" => prices}) do
+  defp transform_coin_data(%{"prices" => prices}) do
     Enum.reduce(prices, "", fn [_timestamp, price], acc -> format_coin_data(acc, price) end)
   end
 
+  @spec get_coin_data(%{
+          optional(:id) =>
+            binary
+            | maybe_improper_list(
+                binary | maybe_improper_list(any, binary | []) | char,
+                binary | []
+              ),
+          optional(any) => any
+        }) :: any
   def get_coin_data(%{id: coin_id}) do
     endpoint =
       Path.join([

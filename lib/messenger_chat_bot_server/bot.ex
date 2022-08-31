@@ -1,7 +1,47 @@
 defmodule MessengerChatBotServer.Bot do
   @moduledoc false
 
+  alias MessengerChatBotServer.Endpoint
+
   require Logger
+
+  def get_started() do
+    msg_template = %{
+      "get_started" => %{"payload" => "GET_STARTED"},
+      "persistent_menu" => [
+        %{
+          "locale" => "default",
+          "composer_input_disabled" => false,
+          "call_to_actions" => [
+            %{
+              "type" => "postback",
+              "title" => "Talk to an agent",
+              "payload" => "CARE_HELP"
+            },
+            %{
+              "type" => "postback",
+              "title" => "Get Started again",
+              "payload" => "CURATION"
+            }
+          ]
+        }
+      ]
+    }
+
+    http_poison_message = Poison.encode!(msg_template)
+    header = [{"Content-Type", "application/json"}]
+    endpoint = Endpoint.get_messenger_profile_endpoint()
+
+    case HTTPoison.post(endpoint, http_poison_message, header) do
+      {:ok, _response} ->
+        :ok
+        Logger.info("Message Sent")
+
+      {:error, reason} ->
+        Logger.error("Error in sending message, #{inspect(reason)}")
+        :error
+    end
+  end
 
   def verify_webhook(params) do
     facebook_chat_bot = Application.get_env(:messenger_chat_bot_server, :facebook_chat_bot)
@@ -10,18 +50,8 @@ defmodule MessengerChatBotServer.Bot do
     mode == "subscribe" && token == facebook_chat_bot.webhook_verify_token
   end
 
-  def bot_endpoint() do
-    facebook_chat_bot = Application.get_env(:messenger_chat_bot_server, :facebook_chat_bot)
-    token = facebook_chat_bot.page_access_token
-    message_url = facebook_chat_bot.message_url
-    base_url = facebook_chat_bot.base_url
-    version = facebook_chat_bot.api_version
-    token_path = "?access_token=#{token}"
-    Path.join([base_url, version, message_url, token_path])
-  end
-
   def send_message(msg_template) do
-    endpoint = bot_endpoint()
+    endpoint = Endpoint.bot_endpoint()
     http_poison_message = Poison.encode!(msg_template)
     header = [{"Content-Type", "application/json"}]
 

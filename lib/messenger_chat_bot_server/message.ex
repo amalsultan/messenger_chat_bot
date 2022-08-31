@@ -1,4 +1,8 @@
 defmodule MessengerChatBotServer.Message do
+  @moduledoc """
+  Provides message content/data
+  """
+
   def get_sender(event) do
     messaging = get_messaging(event)
     messaging["sender"]
